@@ -6,7 +6,7 @@
 ### Smart Inventory & Store Management Platform Built with Laravel
 
 <p align="center">
-<img src="./assets/banner.png" width="100%">
+<img src="./assets/bannar.png" width="100%">
 </p>
 
 <p align="center">
@@ -189,7 +189,7 @@ php artisan serve
 
 ## Dashboard
 
-<img src="./assets/dashboard.png" width="100%">
+<img src="./assets/ashboard.png" width="100%">
 
 ---
 
