@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src="./assets/logo.png" width="140"/>
 
 # 🏪 Dynamic Store Management System
 
@@ -191,24 +190,6 @@ php artisan serve
 ## Dashboard
 
 <img src="./assets/dashboard.png" width="100%">
-
----
-
-## Product Management
-
-<img src="./assets/products.png" width="100%">
-
----
-
-## Inventory Reports
-
-<img src="./assets/report.png" width="100%">
-
----
-
-## Customer Orders
-
-<img src="./assets/orders.png" width="100%">
 
 ---
 
