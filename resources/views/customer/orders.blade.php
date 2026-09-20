@@ -25,6 +25,13 @@
                 ⚠️ {{ session('error') }}
             </div>
         @endif
+        @if($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-xs font-bold shadow-xs space-y-1">
+                @foreach($errors->all() as $error)
+                    <p>⚠️ {{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
 
         {{-- الشاشة مقسمة لـ قسمين: اليمين للكروت واليسار للفواتير المجمعة --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -62,6 +69,7 @@
 
                                             {{-- حقل اختيار الكمية المطور --}}
                                             <div class="flex items-center gap-2">
+                                                <input type="hidden" name="items[{{ $product->id }}][product_id]" value="{{ $product->id }}">
                                                 <span class="text-[11px] text-gray-500 font-medium">الكمية:</span>
                                                 <input type="number" name="items[{{ $product->id }}][quantity]" value="0" min="0" max="{{ $product->quantity }}"
                                                        class="w-20 text-center border-gray-300 rounded-xl text-xs font-bold text-gray-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 p-1.5 shadow-xs">

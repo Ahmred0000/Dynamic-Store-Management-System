@@ -106,6 +106,9 @@
                             @foreach($order->items as $item)
                                 <div class="bg-gray-50 p-1 my-1 rounded border">📦 {{ $item->product->name ?? '...' }} <span class="text-blue-600 font-bold">({{$item->quantity}})</span></div>
                             @endforeach
+                            @if($order->notes)
+                                <div class="mt-1 text-[10px] bg-amber-50 text-amber-800 p-1.5 rounded border border-amber-200">✍️ <strong>ملاحظات:</strong> {{ $order->notes }}</div>
+                            @endif
                         </td>
                         <td class="p-3 font-bold text-gray-900">{{ number_format($order->total_price, 2) }} ج.م</td>
                         <td class="p-3 text-center">

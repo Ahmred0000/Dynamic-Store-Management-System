@@ -35,20 +35,44 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        // تجهيز وتصفية المنتجات المحددة بكميات أكبر من 0 فقط
+        $rawItems = $request->input('items', []);
+        $filteredItems = [];
+
+        if (is_array($rawItems)) {
+            foreach ($rawItems as $key => $item) {
+                $qty = isset($item['quantity']) ? (int)$item['quantity'] : 0;
+                if ($qty > 0) {
+                    $productId = isset($item['product_id']) && !empty($item['product_id']) ? (int)$item['product_id'] : (int)$key;
+                    $filteredItems[] = [
+                        'product_id' => $productId,
+                        'quantity'   => $qty,
+                    ];
+                }
+            }
+        }
+
+        // دمج عناصر المنتجات المفلترة بالـ Request
+        $request->merge(['items' => $filteredItems]);
+
+        // التحقق من صحة البيانات بمدخلات مقبولة ورسائل واضحة
         $request->validate([
             'items'              => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
+        ], [
+            'items.required' => 'يرجى تحديد كمية لمنتج واحد على الأقل قبل إرسال الطلبية.',
+            'items.min'      => 'يرجى تحديد كمية لمنتج واحد على الأقل قبل إرسال الطلبية.',
         ]);
 
-        $totalPrice = 0; // توحيد المسمى ليتوافق مع قاعدة البيانات
+        $totalPrice = 0;
         $orderItems = [];
 
-        foreach ($request->items as $item) {
+        foreach ($filteredItems as $item) {
             $product = Product::findOrFail($item['product_id']);
 
             if ($product->quantity < $item['quantity']) {
-                return back()->with('error', "الكمية المطلوبة من ({$product->name}) غير متوفرة. المتاح: {$product->quantity}");
+                return back()->with('error', "الكمية المطلوبة من ({$product->name}) غير متوفرة. المتاح بالمخزن حالياً: {$product->quantity}");
             }
 
             $subtotal = $product->price * $item['quantity'];
@@ -60,17 +84,17 @@ class OrderController extends Controller
             ];
         }
 
-        // توليد رقم طلب عشوائي مميز لمنع إيرور الـ default value
+        // توليد رقم طلب عشوائي مميز
         $orderNumber = 'INV-' . strtoupper(Str::random(4)) . rand(1000, 9999);
 
-        // التعديل الشامل والمطابق للموديل الخاص بك 100%
+        // إنشاء الطلب في قاعدة البيانات
         $order = Order::create([
             'order_number'  => $orderNumber,
             'user_id'       => Auth::id(),
-            'customer_name' => Auth::user()->name, // جلب اسم العميل تلقائياً
+            'customer_name' => Auth::user()->name,
             'status'        => 'pending',
             'notes'         => $request->notes,
-            'total_price'   => $totalPrice,        // حفظ الإجمالي في الحقل الصحيح total_price
+            'total_price'   => $totalPrice,
         ]);
 
         $order->items()->createMany($orderItems);
